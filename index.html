@@ -909,7 +909,7 @@ function processPayment(){
   const customerDetails={name,phone,email,address:`${address}, ${city}, ${state} - ${pin}${landmark?', Near '+landmark:''}`,city,state,pin,landmark};
   function launchRazorpay(orderId){
     const options={
-      key:'rzp_live_STUkfoADxyGxo',
+      key:'rzp_live_STbFInGGHSfsIT',
       amount:Math.round(total)*100,
       currency:'INR',
       order_id: orderId,
