@@ -14,23 +14,18 @@ const phone = document.getElementById("cf-phone")?.value?.trim();
     return;
   }
 
-  // ── 2. Get total amount ──────────────────────────────────
-  //  This reads the total from your order summary element.
-  //  If it doesn't work, replace with your own cart total variable.
-  let totalText = document.querySelector("#checkoutSummary")?.innerText
-               || document.querySelector(".order-total")?.innerText
-               || "0";
-  let cartTotal = parseFloat(totalText.replace(/[^0-9.]/g, "")) || 0;
+ // ── 2. Get total amount ──────────────────────────────────
+let cartTotal = 0;
 
-  // Fallback: if you have a JS variable like `cartTotal` already, use it directly:
-  // let cartTotal = window.cartTotal || 699;
+const cartEl = document.getElementById("cartTotal");
+if (cartEl) {
+  cartTotal = parseFloat(cartEl.innerText.replace(/[^0-9.]/g, "")) || 0;
+}
 
-  if (cartTotal <= 0) {
-    showToast("Could not read cart total. Please try again.");
-    return;
-  }
+if (cartTotal <= 0) cartTotal = 699;
 
-  const amountInPaise = Math.round(cartTotal * 100);
+const amountInPaise = Math.round(cartTotal * 100);
+
 
   // ── 3. Create Razorpay order via Vercel API ──────────────
   try {
