@@ -944,7 +944,7 @@ function processPayment(){
 
   function createOrderAndPay(){
     showToast('Initializing payment...');
-    fetch('/.netlify/functions/createorder', {
+    fetch('/api/createorder', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({amount:total*100, currency:'INR', receipt:'veluno_'+Date.now()})
