@@ -745,7 +745,14 @@ function saveProducts(p){
     }
   }
 }
-function getOrders(){return JSON.parse(localStorage.getItem('veluno_orders')||'[]');}
+function getOrders(){return JSON.parse(localStorage.getItem('veluno_orders'))||[];}
+async function loadOrdersFromFirebase(){
+  try {
+    const res = await fetch('/api/get-orders');
+    const orders = await res.json();
+    if(Array.isArray(orders)) renderAdminOrders(orders);
+  } catch(e) { console.error('Failed to load orders:', e); }
+}
 function saveOrders(o){localStorage.setItem('veluno_orders',JSON.stringify(o));}
 function getOffers(){return JSON.parse(localStorage.getItem('veluno_offers')||'[]');}
 function saveOffers(o){localStorage.setItem('veluno_offers',JSON.stringify(o));}
@@ -1056,7 +1063,7 @@ function checkAdminLogin(){
     document.getElementById('adminPwd').value='';
     document.getElementById('loginError').style.display='none';
     renderAdminProducts();
-    renderAdminOrders();
+    loadOrdersFromFirebase();
     renderAdminOffers();
     renderAdminStats();
   } else {
@@ -1213,8 +1220,8 @@ function deleteProduct(id){
 // ══════════════════════════════════════
 // ADMIN — ORDERS
 // ══════════════════════════════════════
-function renderAdminOrders(){
-  const orders=getOrders();
+function renderAdminOrders(orders){
+  if(!orders) orders=getOrders();
   const container=document.getElementById('ordersContainer');
   if(!orders.length){container.innerHTML='<div class="no-orders">No orders yet. They will appear here after customers checkout.</div>';return;}
   let html=`<table class="orders-table">
