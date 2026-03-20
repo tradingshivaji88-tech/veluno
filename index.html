@@ -909,8 +909,8 @@ function processPayment(){
   const customerDetails={name,phone,email,address:`${address}, ${city}, ${state} - ${pin}${landmark?', Near '+landmark:''}`,city,state,pin,landmark};
   function launchRazorpay(orderId){
     const options={
-      key:RAZORPAY_KEY,
-      amount:total*100,
+      key:'rzp_live_STUkfoADxyGxo',
+      amount:Math.round(total)*100,
       currency:'INR',
       order_id: orderId,
       name:'VÉLUNO',
@@ -937,17 +937,20 @@ function processPayment(){
         showToast('Order placed successfully! Thank you 🖤');
         ['cf-name','cf-phone','cf-email','cf-address','cf-city','cf-state','cf-pin','cf-landmark'].forEach(id=>document.getElementById(id).value='');
       },
-      modal:{ondismiss:function(){showToast('Payment cancelled.');}}
+      modal:{
+  ondismiss:function(){
+    showToast('If payment was done, your order will be confirmed shortly.');
+  }
+},
     };
     new Razorpay(options).open();
   }
-
   function createOrderAndPay(){
     showToast('Initializing payment...');
     fetch('/api/createorder', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({amount:total*100, currency:'INR', receipt:'veluno_'+Date.now()})
+      body:JSON.stringify({amount:Math.round(total)*100, currency:'INR', receipt:'veluno_'+Date.now()})
     })
     .then(r=>r.json())
     .then(data=>{
