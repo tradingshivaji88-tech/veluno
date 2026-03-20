@@ -929,8 +929,11 @@ function processPayment(){
           razorpayOrderId:response.razorpay_order_id,
           status:'New'
         };
-        orders.unshift(newOrder);
-        saveOrders(orders);
+       fetch('/api/save-order', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(newOrder)
+});
         cart=[];
         updateCartUI();
         closeCheckout();
