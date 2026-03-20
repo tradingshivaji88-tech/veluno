@@ -6,10 +6,9 @@
 
 async function processPayment() {
   // ── 1. Read form fields ──────────────────────────────────
-  const name    = document.getElementById("fullName")?.value?.trim();
-  const email   = document.getElementById("email")?.value?.trim();
-  const phone   = document.getElementById("phone")?.value?.trim();
-
+ const name  = document.getElementById("cf-name")?.value?.trim();
+const email = document.getElementById("cf-email")?.value?.trim();
+const phone = document.getElementById("cf-phone")?.value?.trim();
   if (!name || !email || !phone) {
     showToast("Please fill in all required fields.");
     return;
@@ -18,7 +17,7 @@ async function processPayment() {
   // ── 2. Get total amount ──────────────────────────────────
   //  This reads the total from your order summary element.
   //  If it doesn't work, replace with your own cart total variable.
-  let totalText = document.querySelector("#checkoutSummary .total-amount")?.innerText
+  let totalText = document.querySelector("#checkoutSummary")?.innerText
                || document.querySelector(".order-total")?.innerText
                || "0";
   let cartTotal = parseFloat(totalText.replace(/[^0-9.]/g, "")) || 0;
