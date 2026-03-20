@@ -19,10 +19,11 @@ let cartTotal = 0;
 
 const cartEl = document.getElementById("cartTotal");
 if (cartEl) {
-  cartTotal = parseFloat(cartEl.innerText.replace(/[^0-9.]/g, "")) || 0;
+const rawText = cartEl.innerText.replace(/[^\d.]/g, "");
+cartTotal = parseFloat(rawText) || 0;
+console.log("Cart total detected:", cartTotal);}
 }
-
-if (cartTotal <= 0) cartTotal = 699;
+if (cartTotal <= 0 || cartTotal > 100000) cartTotal = 699;
 
 const amountInPaise = Math.round(cartTotal * 100);
 
