@@ -1,6 +1,6 @@
 const https = require('https');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,10 +11,15 @@ export default async function handler(req, res) {
   const RAZORPAY_KEY_ID     = process.env.RAZORPAY_KEY_ID;
   const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
-  const { amount, currency = 'INR', receipt } = req.body;
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+    return res.status(500).json({ error: 'Razorpay keys not configured' });
+  }
+
+  const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+  const { amount, currency = 'INR', receipt } = body || {};
 
   const orderData = JSON.stringify({
-    amount,
+    amount: amount || 69900,
     currency,
     receipt: receipt || 'veluno_' + Date.now()
   });
@@ -37,7 +42,11 @@ export default async function handler(req, res) {
       let data = '';
       response.on('data', chunk => data += chunk);
       response.on('end', () => {
-        resolve(res.status(response.statusCode).json(JSON.parse(data)));
+        try {
+          resolve(res.status(response.statusCode).json(JSON.parse(data)));
+        } catch(e) {
+          resolve(res.status(500).json({ error: 'Invalid response from Razorpay' }));
+        }
       });
     });
 
@@ -48,4 +57,4 @@ export default async function handler(req, res) {
     request.write(orderData);
     request.end();
   });
-}
+};
