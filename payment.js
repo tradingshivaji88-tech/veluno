@@ -47,7 +47,7 @@ const amountInPaise = Math.round(cartTotal * 100);
 
     // ── 4. Open Razorpay checkout popup ─────────────────────
     const options = {
-      key: "rzp_live_STQ1s2SvssyKe4",   // your Razorpay Key ID
+      key: "rzp_live_STbFInGGHSfsIT",   // your Razorpay Key ID
       amount: order.amount,
       currency: order.currency,
       name: "Véluno",
