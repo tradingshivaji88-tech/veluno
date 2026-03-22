@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VÉLUNO — L'Art Du Style</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#C9A84C;--gold-d:#A07830;--gold-l:#E2C47A;--bg:#F7F3EC;--bg2:#EDE7D9;--white:#FFFFFF;--black:#0F0D0A;--text:#1C1710;--muted:#7A6B55;--border:rgba(201,168,76,0.2);--red:#C0392B;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--gold);}
+.top-bar{height:3px;background:linear-gradient(90deg,transparent,var(--gold-d),var(--gold-l),var(--gold),var(--gold-d),transparent);}
+nav{background:var(--white);padding:16px 48px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:500;border-bottom:1px solid var(--border);box-shadow:0 2px 20px rgba(15,13,10,0.06);}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;letter-spacing:0.25em;color:var(--black);}
+.nav-tagline{font-size:9px;font-style:italic;letter-spacing:0.2em;color:var(--gold-d);font-family:'Cormorant Garamond',serif;}
+.nav-right{display:flex;gap:20px;align-items:center;}
+.nav-right a{font-size:9px;letter-spacing:0.35em;color:var(--muted);text-decoration:none;text-transform:uppercase;cursor:pointer;}
+.nav-right a:hover{color:var(--gold-d);}
+.cart-btn{display:flex;align-items:center;gap:8px;background:var(--black);border:none;padding:9px 20px;cursor:pointer;transition:background 0.3s;}
+.cart-btn:hover{background:var(--gold-d);}
+.cart-btn span{font-size:9px;letter-spacing:0.3em;color:var(--white);text-transform:uppercase;}
+.cart-count{background:var(--gold);color:var(--black);font-size:9px;font-weight:600;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.hero{background:linear-gradient(135deg,#F2EBD9 0%,#FAF6EE 40%,#EDE3CC 100%);padding:80px 48px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(201,168,76,0.03) 0px,rgba(201,168,76,0.03) 1px,transparent 1px,transparent 12px);}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.hero-label{font-size:8px;letter-spacing:0.6em;color:var(--gold-d);text-transform:uppercase;margin-bottom:20px;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:14px;}
+.hero-label::before,.hero-label::after{content:'';height:0.5px;width:40px;background:rgba(160,120,48,0.4);}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(56px,10vw,110px);font-weight:600;letter-spacing:0.18em;color:var(--black);line-height:1;position:relative;z-index:1;}
+.hero-div{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0 12px;position:relative;z-index:1;}
+.hdl{height:1px;width:60px;background:linear-gradient(90deg,transparent,var(--gold));}
+.hdl.r{background:linear-gradient(90deg,var(--gold),transparent);}
+.hdd{width:5px;height:5px;background:var(--gold);transform:rotate(45deg);}
+.hero-tag{font-family:'Cormorant Garamond',serif;font-size:clamp(14px,2vw,22px);font-style:italic;letter-spacing:0.25em;color:var(--gold-d);position:relative;z-index:1;}
+.hero-cta{display:inline-block;margin-top:32px;background:var(--black);color:var(--white);font-size:9px;letter-spacing:0.45em;text-transform:uppercase;padding:14px 44px;cursor:pointer;border:none;transition:background 0.3s;position:relative;z-index:1;font-family:'Montserrat',sans-serif;}
+.hero-cta:hover{background:var(--gold-d);}
+.brand-strip{background:var(--white);padding:16px 48px;display:flex;justify-content:center;align-items:center;gap:40px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.strip-item{font-size:8px;letter-spacing:0.45em;color:var(--text);text-transform:uppercase;}
+.strip-dot{width:3px;height:3px;background:var(--gold);border-radius:50%;}
+.section{padding:72px 48px;}
+.section-head{text-align:center;margin-bottom:40px;}
+.section-label{font-size:8px;letter-spacing:0.6em;color:var(--gold-d);text-transform:uppercase;margin-bottom:12px;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,42px);font-weight:300;letter-spacing:0.1em;color:var(--white);}
+.section-line{width:48px;height:1px;background:var(--gold);margin:14px auto 0;opacity:0.6;}
+.gender-filters{display:flex;justify-content:center;gap:16px;margin-top:32px;flex-wrap:wrap;}
+.gender-btn{display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);padding:20px 40px;cursor:pointer;transition:all 0.3s;font-family:'Montserrat',sans-serif;min-width:140px;}
+.gender-btn:hover{background:rgba(201,168,76,0.1);border-color:var(--gold);}
+.gender-btn.active{background:var(--gold);border-color:var(--gold);}
+.g-emoji{font-size:32px;line-height:1;}
+.g-text{font-size:9px;letter-spacing:0.5em;text-transform:uppercase;color:rgba(255,255,255,0.7);}
+.gender-btn.active .g-text{color:var(--black)!important;}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;max-width:1200px;margin:0 auto;}
+.product-card{background:var(--white);border:1px solid var(--border);transition:all 0.3s;cursor:pointer;position:relative;}
+.product-card:hover{box-shadow:0 16px 48px rgba(15,13,10,0.1);transform:translateY(-4px);}
+.product-badge{position:absolute;top:12px;left:12px;background:var(--black);color:var(--gold);font-size:7px;letter-spacing:0.35em;text-transform:uppercase;padding:4px 10px;z-index:2;}
+.offer-badge{position:absolute;top:12px;right:12px;background:var(--red);color:white;font-size:7px;letter-spacing:0.2em;text-transform:uppercase;padding:4px 10px;z-index:2;}
+.product-img-wrap{height:280px;background:var(--bg2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+.product-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.p-placeholder{text-align:center;}
+.p-icon{font-size:52px;opacity:0.25;display:block;margin-bottom:8px;}
+.p-cat{font-size:8px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;}
+.img-overlay{position:absolute;inset:0;background:rgba(15,13,10,0.45);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;}
+.product-card:hover .img-overlay{opacity:1;}
+.img-overlay span{font-size:8px;letter-spacing:0.45em;color:var(--white);text-transform:uppercase;}
+.product-info{padding:20px;}
+.product-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--black);margin-bottom:5px;}
+.product-desc{font-size:10px;color:var(--muted);margin-bottom:14px;line-height:1.7;}
+.product-colors{display:flex;gap:6px;margin-bottom:14px;}
+.color-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.1);cursor:pointer;transition:transform 0.2s;}
+.color-dot.active{transform:scale(1.3);border-color:var(--gold);}
+.product-bottom{display:flex;align-items:center;justify-content:space-between;}
+.price-wrap{display:flex;align-items:baseline;gap:5px;}
+.product-price{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--black);}
+.product-mrp{font-size:11px;color:var(--muted);text-decoration:line-through;}
+.product-disc{font-size:9px;color:#2E7D32;font-weight:500;}
+.add-cart-btn{background:var(--black);color:var(--white);border:none;padding:10px 18px;font-size:8px;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;transition:background 0.3s;}
+.add-cart-btn:hover{background:var(--gold-d);}
+.loading-wrap{display:flex;align-items:center;justify-content:center;padding:80px;grid-column:1/-1;}
+.spinner{width:32px;height:32px;border:2px solid rgba(201,168,76,0.2);border-top:2px solid var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.cart-overlay{position:fixed;inset:0;background:rgba(15,13,10,0.5);z-index:900;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-sidebar{position:fixed;right:0;top:0;bottom:0;width:400px;background:var(--white);z-index:1000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);border-left:1px solid var(--border);}
+.cart-sidebar.open{transform:translateX(0);}
+.cart-header{background:var(--bg2);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.cart-title{font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:0.18em;color:var(--black);font-weight:600;}
+.cart-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+.cart-items{flex:1;overflow-y:auto;padding:20px;}
+.cart-empty{text-align:center;padding:60px 20px;}
+.cart-empty p{font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--muted);line-height:2;}
+.cart-item{display:flex;gap:14px;padding:16px 0;border-bottom:0.5px solid var(--border);}
+.cart-item-img{width:68px;height:68px;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px;overflow:hidden;}
+.cart-item-img img{width:100%;height:100%;object-fit:cover;}
+.cart-item-info{flex:1;}
+.cart-item-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--black);margin-bottom:3px;}
+.cart-item-meta{font-size:9px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.cart-item-row{display:flex;justify-content:space-between;align-items:center;}
+.cart-item-qty{display:flex;align-items:center;gap:10px;}
+.qty-btn{width:24px;height:24px;background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all 0.2s;}
+.qty-btn:hover{background:var(--black);color:var(--gold);}
+.qty-num{font-size:13px;font-weight:500;min-width:20px;text-align:center;}
+.cart-item-price{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--black);}
+.cart-remove{background:none;border:none;color:var(--muted);font-size:9px;cursor:pointer;letter-spacing:0.2em;text-transform:uppercase;margin-top:5px;padding:0;}
+.cart-remove:hover{color:var(--red);}
+.cart-footer{padding:20px 24px;border-top:1px solid var(--border);background:var(--bg2);}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.cart-total-label{font-size:9px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;}
+.cart-total-price{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--black);}
+.cart-note{font-size:9px;color:var(--muted);margin-bottom:16px;}
+.checkout-btn{width:100%;background:var(--black);color:var(--white);border:none;padding:15px;font-size:9px;letter-spacing:0.45em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;transition:background 0.3s;margin-bottom:8px;}
+.checkout-btn:hover{background:var(--gold-d);}
+.continue-btn{width:100%;background:none;color:var(--muted);border:0.5px solid var(--border);padding:11px;font-size:8px;letter-spacing:0.4em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.checkout-overlay{position:fixed;inset:0;background:rgba(15,13,10,0.7);z-index:1100;display:none;align-items:center;justify-content:center;padding:24px;}
+.checkout-overlay.open{display:flex;}
+.checkout-modal{background:var(--white);max-width:520px;width:100%;max-height:90vh;overflow-y:auto;border-top:3px solid var(--gold);}
+.checkout-header{background:var(--black);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;}
+.checkout-header-title{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.2em;color:var(--white);font-weight:600;}
+.checkout-close{background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;}
+.checkout-form{padding:28px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-row.full{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:8px;letter-spacing:0.4em;color:var(--gold-d);text-transform:uppercase;font-weight:500;}
+.form-input{border:0.5px solid var(--border);padding:12px 14px;font-family:'Montserrat',sans-serif;font-size:12px;color:var(--text);outline:none;background:var(--bg);transition:border-color 0.2s;}
+.form-input:focus{border-color:var(--gold);}
+.form-section-title{font-size:8px;letter-spacing:0.45em;color:var(--muted);text-transform:uppercase;margin:20px 0 14px;padding-bottom:8px;border-bottom:0.5px solid var(--border);}
+.order-summary-box{background:var(--bg2);padding:16px;margin-bottom:20px;border:0.5px solid var(--border);}
+.order-summary-item{display:flex;justify-content:space-between;font-size:11px;color:var(--text);margin-bottom:6px;}
+.order-summary-total{display:flex;justify-content:space-between;font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--black);padding-top:10px;border-top:0.5px solid var(--border);margin-top:8px;}
+.pay-btn{width:100%;background:var(--black);color:var(--white);border:none;padding:16px;font-size:9px;letter-spacing:0.5em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:500;transition:background 0.3s;}
+.pay-btn:hover{background:var(--gold-d);}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,13,10,0.6);z-index:800;display:none;align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);max-width:820px;width:100%;max-height:90vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;position:relative;border-top:3px solid var(--gold);}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--black);border:none;color:var(--gold);width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;z-index:10;}
+.modal-img-area{background:var(--bg2);display:flex;align-items:center;justify-content:center;min-height:380px;border-right:1px solid var(--border);overflow:hidden;position:relative;}
+.gallery-wrap{width:100%;height:100%;min-height:380px;position:relative;}
+.gallery-slides{display:flex;height:100%;min-height:380px;transition:transform 0.4s ease;}
+.gallery-slide{min-width:100%;height:100%;min-height:380px;display:flex;align-items:center;justify-content:center;font-size:80px;}
+.gallery-slide img{width:100%;height:100%;object-fit:cover;}
+.g-prev,.g-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(15,13,10,0.6);border:none;color:var(--gold);width:32px;height:32px;cursor:pointer;font-size:18px;z-index:5;display:flex;align-items:center;justify-content:center;}
+.g-prev{left:8px;}.g-next{right:8px;}
+.g-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+.g-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s;}
+.g-dot.active{background:var(--gold);}
+.modal-info{padding:36px 28px;display:flex;flex-direction:column;gap:14px;}
+.modal-badge{font-size:7px;letter-spacing:0.45em;color:var(--gold-d);text-transform:uppercase;}
+.modal-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--black);}
+.modal-price-row{display:flex;align-items:baseline;gap:8px;}
+.modal-price{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--black);}
+.modal-mrp{font-size:13px;color:var(--muted);text-decoration:line-through;}
+.modal-off{font-size:10px;color:#2E7D32;font-weight:500;}
+.modal-desc{font-size:11px;font-weight:300;line-height:1.9;color:var(--muted);}
+.modal-divider{height:0.5px;background:linear-gradient(90deg,var(--gold),rgba(201,168,76,0.1));}
+.size-label{font-size:8px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.sizes{display:flex;gap:7px;flex-wrap:wrap;}
+.size-opt{border:0.5px solid var(--border);padding:7px 13px;font-size:11px;cursor:pointer;transition:all 0.2s;background:none;font-family:'Montserrat',sans-serif;color:var(--text);}
+.size-opt:hover,.size-opt.active{background:var(--black);color:var(--white);border-color:var(--black);}
+.modal-colors-row{display:flex;gap:8px;}
+.modal-add-btn{background:var(--black);color:var(--white);border:none;padding:15px;font-size:9px;letter-spacing:0.4em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;transition:background 0.3s;margin-top:auto;}
+.modal-add-btn:hover{background:var(--gold-d);}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.feat{font-size:9px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+.feat::before{content:'✦';color:var(--gold);font-size:7px;}
+.success-overlay{position:fixed;inset:0;background:rgba(15,13,10,0.85);z-index:2000;display:none;align-items:center;justify-content:center;}
+.success-overlay.open{display:flex;}
+.success-box{background:var(--white);padding:48px 40px;text-align:center;max-width:420px;border-top:3px solid var(--gold);}
+.success-icon{font-size:48px;margin-bottom:16px;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--black);margin-bottom:8px;}
+.success-msg{font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:24px;}
+.success-close-btn{background:var(--black);color:var(--white);border:none;padding:14px 32px;font-size:9px;letter-spacing:0.4em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;}
+footer{background:var(--bg2);padding:48px 48px 24px;border-top:3px solid var(--gold);}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:32px;}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;letter-spacing:0.2em;color:var(--black);margin-bottom:5px;}
+.footer-tagline{font-size:10px;font-style:italic;letter-spacing:0.18em;color:var(--gold-d);font-family:'Cormorant Garamond',serif;}
+.footer-desc{font-size:10px;font-weight:200;line-height:1.9;color:var(--muted);margin-top:12px;}
+.footer-col-title{font-size:8px;letter-spacing:0.5em;color:var(--gold-d);text-transform:uppercase;margin-bottom:16px;}
+.footer-links{display:flex;flex-direction:column;gap:10px;}
+.footer-links a{font-size:10px;color:var(--muted);text-decoration:none;transition:color 0.3s;cursor:pointer;}
+.footer-links a:hover{color:var(--gold-d);}
+.footer-bottom{border-top:0.5px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;}
+.footer-copy{font-size:8px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--white);color:var(--text);padding:14px 28px;font-size:10px;letter-spacing:0.2em;border-left:3px solid var(--gold);border:1px solid var(--border);z-index:3000;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;box-shadow:0 8px 32px rgba(15,13,10,0.12);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+#adminPanel{display:none;position:fixed;inset:0;background:#0F0D0A;z-index:9999;overflow-y:auto;}
+.a-nav{background:#0F0D0A;border-bottom:1px solid rgba(201,168,76,0.2);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:12px;}
+.a-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:0.2em;color:var(--white);}
+.a-brand span{color:var(--gold);font-size:10px;letter-spacing:0.3em;display:block;font-family:'Montserrat',sans-serif;font-weight:300;}
+.a-nav-btns{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.a-tab-btn{background:none;border:1px solid rgba(201,168,76,0.2);color:rgba(255,255,255,0.5);padding:8px 16px;font-size:8px;letter-spacing:0.35em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
+.a-tab-btn.active,.a-tab-btn:hover{background:var(--gold);color:var(--black);border-color:var(--gold);}
+.a-exit{background:var(--red);border:none;color:white;padding:8px 16px;font-size:8px;letter-spacing:0.35em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.a-content{max-width:1200px;margin:0 auto;padding:32px;}
+.a-tab{display:none;}.a-tab.active{display:block;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-bottom:32px;}
+.stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);padding:24px;text-align:center;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--white);}
+.stat-label{font-size:8px;letter-spacing:0.4em;color:var(--gold);text-transform:uppercase;margin-top:6px;}
+.a-section-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--white);margin-bottom:20px;padding-bottom:12px;border-bottom:0.5px solid rgba(201,168,76,0.15);}
+.a-product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:32px;}
+.a-product-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);padding:20px;}
+.apc-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.apc-icon{font-size:32px;}
+.apc-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--white);}
+.apc-gender{font-size:7px;letter-spacing:0.35em;color:var(--gold);text-transform:uppercase;}
+.apc-price{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--white);margin-bottom:12px;}
+.apc-actions{display:flex;gap:8px;}
+.apc-btn{flex:1;padding:8px;font-size:8px;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;border:none;transition:all 0.2s;}
+.apc-btn.edit{background:rgba(201,168,76,0.15);color:var(--gold);border:0.5px solid rgba(201,168,76,0.2);}
+.apc-btn.edit:hover{background:var(--gold);color:var(--black);}
+.apc-btn.del{background:rgba(192,57,43,0.15);color:#E74C3C;border:0.5px solid rgba(192,57,43,0.2);}
+.apc-btn.del:hover{background:var(--red);color:white;}
+.a-form{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);padding:28px;margin-bottom:24px;}
+.a-form-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--white);margin-bottom:24px;}
+.a-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.a-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.a-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.a-label{font-size:8px;letter-spacing:0.4em;color:var(--gold);text-transform:uppercase;}
+.a-input{background:rgba(255,255,255,0.06);border:0.5px solid rgba(201,168,76,0.2);padding:11px 14px;font-family:'Montserrat',sans-serif;font-size:12px;color:var(--white);outline:none;width:100%;}
+.a-input:focus{border-color:var(--gold);}
+.a-input option{background:#1A1510;color:var(--white);}
+.a-textarea{min-height:80px;resize:vertical;}
+.a-form-actions{display:flex;gap:12px;margin-top:8px;}
+.a-save-btn{background:var(--gold);color:var(--black);border:none;padding:12px 32px;font-size:8px;letter-spacing:0.4em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.a-cancel-btn{background:none;color:rgba(255,255,255,0.4);border:0.5px solid rgba(255,255,255,0.1);padding:12px 24px;font-size:8px;letter-spacing:0.4em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.a-add-btn{background:none;border:1px dashed rgba(201,168,76,0.3);color:var(--gold);padding:16px;font-size:8px;letter-spacing:0.4em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;margin-bottom:24px;}
+.photo-upload-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+.photo-upload-lbl{background:rgba(201,168,76,0.15);color:var(--gold);border:0.5px solid rgba(201,168,76,0.3);padding:10px 18px;font-size:8px;letter-spacing:0.35em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.photo-slots{display:flex;gap:8px;flex-wrap:wrap;}
+.photo-slot{position:relative;width:80px;height:80px;border:1px solid rgba(201,168,76,0.2);overflow:hidden;}
+.photo-slot img{width:100%;height:100%;object-fit:cover;}
+.photo-slot-x{position:absolute;top:2px;right:2px;background:rgba(192,57,43,0.85);border:none;color:white;width:18px;height:18px;cursor:pointer;font-size:9px;}
+.orders-table{width:100%;border-collapse:collapse;}
+.orders-table th{font-size:7px;letter-spacing:0.4em;color:var(--gold);text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid rgba(201,168,76,0.15);}
+.orders-table td{font-size:11px;color:rgba(255,255,255,0.7);padding:14px 16px;border-bottom:0.5px solid rgba(255,255,255,0.05);vertical-align:top;}
+.status-select{background:#1A1510;border:0.5px solid rgba(201,168,76,0.2);color:white;padding:4px 8px;font-size:9px;cursor:pointer;}
+.no-data{text-align:center;padding:60px;color:rgba(255,255,255,0.3);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:16px;}
+.offer-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);padding:20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.offer-name{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--white);margin-bottom:4px;}
+.offer-detail{font-size:9px;color:rgba(255,255,255,0.4);}
+.offer-pill{background:rgba(192,57,43,0.2);color:#E74C3C;border:0.5px solid rgba(192,57,43,0.3);font-size:8px;letter-spacing:0.3em;padding:4px 12px;text-transform:uppercase;}
+.offer-del-btn{background:rgba(192,57,43,0.15);color:#E74C3C;border:0.5px solid rgba(192,57,43,0.2);padding:8px 16px;font-size:8px;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;margin-left:16px;}
+#adminLogin{display:none;position:fixed;inset:0;background:rgba(15,13,10,0.95);z-index:9998;align-items:center;justify-content:center;}
+#adminLogin.open{display:flex;}
+.login-box{background:#1A1510;border:1px solid rgba(201,168,76,0.2);border-top:3px solid var(--gold);padding:48px 40px;max-width:400px;width:100%;text-align:center;}
+.login-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;letter-spacing:0.2em;color:var(--white);margin-bottom:6px;}
+.login-sub{font-size:9px;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:32px;}
+.login-input{width:100%;background:rgba(255,255,255,0.06);border:0.5px solid rgba(201,168,76,0.2);padding:14px 18px;font-family:'Montserrat',sans-serif;font-size:13px;color:var(--white);outline:none;text-align:center;letter-spacing:0.2em;margin-bottom:16px;}
+.login-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:9px;letter-spacing:0.45em;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.login-err{font-size:10px;color:var(--red);margin-top:12px;display:none;}
+.sync-badge{font-size:8px;letter-spacing:0.2em;padding:4px 10px;border-radius:2px;}
+.sync-ok{background:rgba(39,174,96,0.2);color:#27AE60;}
+.sync-err{background:rgba(192,57,43,0.2);color:#E74C3C;}
+@media(max-width:768px){
+  nav{padding:12px 20px;}
+  .nav-right a{display:none;}
+  .section{padding:48px 20px;}
+  .hero{padding:56px 24px;}
+  .products-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
+  .cart-sidebar{width:100%;}
+  .modal{grid-template-columns:1fr;}
+  .modal-img-area{min-height:240px;}
+  .footer-top{grid-template-columns:1fr;}
+  footer{padding:32px 20px 20px;}
+  .a-grid2,.a-grid3{grid-template-columns:1fr;}
+  .a-content{padding:20px;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="store">
+<div class="top-bar"></div>
+<nav>
+  <div>
+    <div class="nav-brand">VÉLUNO</div>
+    <div class="nav-tagline">L'Art Du Style</div>
+  </div>
+  <div class="nav-right">
+    <a onclick="scrollTo({top:0,behavior:'smooth'})">Home</a>
+    <a onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Shop</a>
+    <a href="/cdn-cgi/l/email-protection#5b3834352f3a382f1b2d3e372e3534753834753235">Contact</a>
+    <button class="cart-btn" onclick="toggleCart()">
+      <span>Cart</span>
+      <div class="cart-count" id="cartCount">0</div>
+    </button>
+  </div>
+</nav>
+
+<section class="hero">
+  <p class="hero-label">New Collection · 2026</p>
+  <h1 class="hero-title">VÉLUNO</h1>
+  <div class="hero-div"><div class="hdl"></div><div class="hdd"></div><div class="hdl r"></div></div>
+  <p class="hero-tag">L'Art Du Style</p>
+  <button class="hero-cta" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Shop Collection</button>
+</section>
+
+<div class="brand-strip">
+  <span class="strip-item">Premium Cotton</span><div class="strip-dot"></div>
+  <span class="strip-item">Made in India</span><div class="strip-dot"></div>
+  <span class="strip-item">Free Delivery ₹999+</span><div class="strip-dot"></div>
+  <span class="strip-item">Easy Returns</span><div class="strip-dot"></div>
+  <span class="strip-item">Secure Payments</span>
+</div>
+
+<section class="section" id="shop" style="background:#0F0D0A;">
+  <div class="section-head">
+    <p class="section-label">Our Collection</p>
+    <h2 class="section-title">The Véluno Edit</h2>
+    <div class="section-line"></div>
+    <div class="gender-filters">
+      <button class="gender-btn active" id="btnAll" onclick="filterGender('all')"><span class="g-emoji">✦</span><span class="g-text">All</span></button>
+      <button class="gender-btn" id="btnMen" onclick="filterGender('men')"><span class="g-emoji">👔</span><span class="g-text">Men</span></button>
+      <button class="gender-btn" id="btnWomen" onclick="filterGender('women')"><span class="g-emoji">👗</span><span class="g-text">Women</span></button>
+    </div>
+  </div>
+  <div class="products-grid" id="productsGrid">
+    <div class="loading-wrap"><div class="spinner"></div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">VÉLUNO</div>
+      <div class="footer-tagline">L'Art Du Style</div>
+      <p class="footer-desc">Premium casual wear crafted with intention, worn with pride.</p>
+    </div>
+    <div>
+      <p class="footer-col-title">Quick Links</p>
+      <div class="footer-links">
+        <a onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Shop</a>
+        <a href="/cdn-cgi/l/email-protection#4c2f2322382d2f380c3a2920392223622f23622522">Contact Us</a>
+        <a href="https://instagram.com/veluno.in" target="_blank">Instagram</a>
+        <a href="https://wa.me/918408958017" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Support</p>
+      <div class="footer-links">
+        <a href="#">Size Guide</a>
+        <a href="#">Shipping Policy</a>
+        <a href="#">Return Policy</a>
+        <a href="/cdn-cgi/l/email-protection#ceada1a0baafadba8eb8aba2bba0a1e0ada1e0a7a0"><span class="__cf_email__" data-cfemail="87e4e8e9f3e6e4f3c7f1e2ebf2e9e8a9e4e8a9eee9">[email&#160;protected]</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 Véluno. All rights reserved.</span>
+    <span class="footer-copy">L'Art Du Style 🖤</span>
+  </div>
+</footer>
+</div>
+
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header"><span class="cart-title">Your Cart 🖤</span><button class="cart-close" onclick="toggleCart()">✕</button></div>
+  <div class="cart-items" id="cartItems"><div class="cart-empty"><p>Your cart is empty.<br>Start shopping 🖤</p></div></div>
+  <div class="cart-footer" id="cartFooter" style="display:none;">
+    <div class="cart-total-row"><span class="cart-total-label">Total</span><span class="cart-total-price" id="cartTotal">₹0</span></div>
+    <p class="cart-note">Free shipping on orders above ₹999 🖤</p>
+    <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout →</button>
+    <button class="continue-btn" onclick="toggleCart()">Continue Shopping</button>
+  </div>
+</div>
+
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <div class="checkout-header">
+      <span class="checkout-header-title">VÉLUNO Checkout</span>
+      <button class="checkout-close" onclick="closeCheckout()">✕</button>
+    </div>
+    <div class="checkout-form">
+      <p class="form-section-title">Delivery Details</p>
+      <div class="form-row"><div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" id="cf-name" placeholder="Your full name"></div><div class="form-group"><label class="form-label">Phone *</label><input class="form-input" id="cf-phone" type="tel" placeholder="10 digit mobile"></div></div>
+      <div class="form-row full"><div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="cf-email" type="email" placeholder="your@email.com"></div></div>
+      <div class="form-row full"><div class="form-group"><label class="form-label">Full Address *</label><input class="form-input" id="cf-address" placeholder="House no, Street, Area"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">City *</label><input class="form-input" id="cf-city" placeholder="City"></div><div class="form-group"><label class="form-label">State *</label><input class="form-input" id="cf-state" placeholder="State"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Pincode *</label><input class="form-input" id="cf-pin" placeholder="6 digit pincode"></div><div class="form-group"><label class="form-label">Landmark</label><input class="form-input" id="cf-landmark" placeholder="Near..."></div></div>
+      <p class="form-section-title">Order Summary</p>
+      <div class="order-summary-box" id="checkoutSummary"></div>
+      <button class="pay-btn" onclick="processPayment()">Pay Securely via Razorpay →</button>
+      <p style="font-size:9px;color:var(--muted);text-align:center;margin-top:12px;letter-spacing:0.1em;">✅ Pay via UPI, Card or Net Banking &nbsp;|&nbsp; ❌ Do not use QR code scan</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="productModal">
+    <button class="modal-close" onclick="event.stopPropagation();closeModalDirect()">✕</button>
+    <div class="modal-img-area" id="modalImg"></div>
+    <div class="modal-info" id="modalInfo"></div>
+  </div>
+</div>
+
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">🖤</div>
+    <div class="success-title">Order Placed!</div>
+    <p class="success-msg" id="successMsg">Thank you for shopping with Véluno!</p>
+    <button class="success-close-btn" onclick="document.getElementById('successOverlay').classList.remove('open')">Continue Shopping</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="adminLogin">
+  <div class="login-box">
+    <div class="login-title">VÉLUNO</div>
+    <div class="login-sub">Admin Panel</div>
+    <input class="login-input" type="password" id="adminPwd" placeholder="Enter Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Enter Admin Panel</button>
+    <p class="login-err" id="loginErr">Incorrect password.</p>
+  </div>
+</div>
+
+<div id="adminPanel">
+  <div class="a-nav">
+    <div><div class="a-brand">VÉLUNO<span>Admin Panel · Firebase Live</span></div></div>
+    <div class="a-nav-btns">
+      <span id="syncBadge" class="sync-badge sync-ok">● Firebase Connected</span>
+      <button class="a-tab-btn active" onclick="switchTab('products',this)">Products</button>
+      <button class="a-tab-btn" onclick="switchTab('orders',this)">Orders</button>
+      <button class="a-tab-btn" onclick="switchTab('offers',this)">Offers</button>
+      <button class="a-exit" onclick="exitAdmin()">← Exit Store</button>
+    </div>
+  </div>
+  <div class="a-content">
+
+    <div class="a-tab active" id="tab-products">
+      <div class="stats-grid" id="adminStats"></div>
+      <div class="a-section-title">Product Management</div>
+      <button class="a-add-btn" onclick="showForm()">+ Add New Product</button>
+      <div class="a-form" id="productForm" style="display:none;">
+        <div class="a-form-title" id="formTitle">Add New Product</div>
+        <input type="hidden" id="editId">
+        <div class="a-grid2">
+          <div class="a-field"><label class="a-label">Product Name *</label><input class="a-input" id="fp-name" placeholder="e.g. Men's Oversized Tee"></div>
+          <div class="a-field"><label class="a-label">Category</label><input class="a-input" id="fp-cat" placeholder="T-Shirts, Polo, Hoodies"></div>
+        </div>
+        <div class="a-grid3">
+          <div class="a-field"><label class="a-label">Price (₹) *</label><input class="a-input" id="fp-price" type="number" placeholder="449"></div>
+          <div class="a-field"><label class="a-label">MRP (₹) *</label><input class="a-input" id="fp-mrp" type="number" placeholder="799"></div>
+          <div class="a-field"><label class="a-label">Gender *</label><select class="a-input" id="fp-gender"><option value="men">Men</option><option value="women">Women</option></select></div>
+        </div>
+        <div class="a-grid2">
+          <div class="a-field"><label class="a-label">Badge</label><input class="a-input" id="fp-tag" placeholder="Best Seller, New, Premium"></div>
+          <div class="a-field"><label class="a-label">Icon (emoji)</label><input class="a-input" id="fp-icon" placeholder="👕"></div>
+        </div>
+        <div class="a-field"><label class="a-label">Description *</label><textarea class="a-input a-textarea" id="fp-desc" placeholder="Product description..."></textarea></div>
+        <div class="a-field">
+          <label class="a-label">Product Photos (up to 5)</label>
+          <div class="photo-upload-row">
+            <label class="photo-upload-lbl" for="fp-photos">📷 Upload Photos</label>
+            <input type="file" id="fp-photos" accept="image/*" multiple style="display:none;" onchange="handlePhotos(this)">
+            <span style="font-size:9px;color:rgba(255,255,255,0.3);">or</span>
+            <input class="a-input" id="fp-url" placeholder="Paste image URL..." style="flex:1;min-width:160px;padding:10px 12px;">
+            <button onclick="addUrl()" style="background:rgba(201,168,76,0.15);color:var(--gold);border:0.5px solid rgba(201,168,76,0.3);padding:10px 14px;font-size:8px;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;font-family:Montserrat,sans-serif;">Add URL</button>
+          </div>
+          <div class="photo-slots" id="photoSlots"></div>
+        </div>
+        <div class="a-grid2">
+          <div class="a-field"><label class="a-label">Colors (hex, comma separated)</label><input class="a-input" id="fp-colors" placeholder="#0F0D0A,#FFFFFF,#1A3A5C"></div>
+          <div class="a-field"><label class="a-label">Color Names</label><input class="a-input" id="fp-cnames" placeholder="Black,White,Navy"></div>
+        </div>
+        <div class="a-field"><label class="a-label">Sizes (comma separated)</label><input class="a-input" id="fp-sizes" placeholder="S,M,L,XL,XXL"></div>
+        <div class="a-field"><label class="a-label">Features (comma separated, max 4)</label><input class="a-input" id="fp-features" placeholder="220 GSM Cotton,Regular Fit,Breathable,Pre-shrunk"></div>
+        <div class="a-form-actions">
+          <button class="a-save-btn" onclick="saveProduct()">Save Product</button>
+          <button class="a-cancel-btn" onclick="hideForm()">Cancel</button>
+        </div>
+      </div>
+      <div class="a-product-grid" id="adminProductGrid"><div class="no-data">Loading...</div></div>
+    </div>
+
+    <div class="a-tab" id="tab-orders">
+      <div class="a-section-title">Customer Orders <span id="orderCount" style="font-size:14px;color:var(--gold);"></span></div>
+      <div id="ordersContainer"><div class="no-data">Loading orders...</div></div>
+    </div>
+
+    <div class="a-tab" id="tab-offers">
+      <div class="a-section-title">Offers & Promotions</div>
+      <div class="a-form">
+        <div class="a-form-title">Create New Offer</div>
+        <div class="a-grid2">
+          <div class="a-field"><label class="a-label">Offer Title *</label><input class="a-input" id="of-title" placeholder="Summer Sale"></div>
+          <div class="a-field"><label class="a-label">Discount %</label><input class="a-input" id="of-pct" type="number" placeholder="20"></div>
+        </div>
+        <div class="a-grid2">
+          <div class="a-field"><label class="a-label">Apply To</label><select class="a-input" id="of-apply"><option value="all">All Products</option><option value="men">Men Only</option><option value="women">Women Only</option></select></div>
+          <div class="a-field"><label class="a-label">Badge Text</label><input class="a-input" id="of-badge" placeholder="SALE, 20% OFF"></div>
+        </div>
+        <div class="a-form-actions"><button class="a-save-btn" onclick="saveOffer()">Apply Offer</button></div>
+      </div>
+      <div id="offersContainer"></div>
+    </div>
+
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ─────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────
+const RAZORPAY_KEY = 'rzp_live_STQ1s2SvssyKe4';
+const ADMIN_PASS = 'veluno2026';
+const FB_CONFIG = {
+  apiKey:"AIzaSyANufsBr0Wmh7Ej7sYzz20ZznDSSu79utA",
+  authDomain:"veluno-145b0.firebaseapp.com",
+  projectId:"veluno-145b0",
+  storageBucket:"veluno-145b0.firebasestorage.app",
+  messagingSenderId:"986972721671",
+  appId:"1:986972721671:web:40f00f2d295a4370b150a2"
+};
+
+// ─────────────────────────────────────
+// STATE
+// ─────────────────────────────────────
+let db = null;
+let allProducts = [];
+let cart = [];
+let selSizes = {};
+let selColors = {};
+let curGender = 'all';
+let curPhotos = [];
+let gIdx = 0;
+let ordersListener = null;
+
+// ─────────────────────────────────────
+// FIREBASE LOADER
+// ─────────────────────────────────────
+// ─────────────────────────────────────
+// DEFAULT PRODUCTS
+// ─────────────────────────────────────
+const DEFAULT_PRODUCTS = [
+  {name:"Men's Oversized Drop-Shoulder Tee",tag:"Best Seller",category:"T-Shirts",icon:"👕",gender:"men",desc:"180-200 GSM premium cotton. Drop shoulder cut for that perfect relaxed fit.",price:449,mrp:799,colors:["#0F0D0A","#FFFFFF","#C8B89A"],colorNames:["Black","White","Dusty Beige"],sizes:["S","M","L","XL","XXL"],features:["180-200 GSM Cotton","Drop Shoulder","Relaxed Fit","Pre-shrunk"],images:[]},
+  {name:"Men's Round Neck Sinker Tee",tag:"New",category:"T-Shirts",icon:"👕",gender:"men",desc:"Lightweight sinker cotton for all-day comfort. Clean minimalist design.",price:399,mrp:699,colors:["#0F0D0A","#FFFFFF","#1A3A5C"],colorNames:["Black","White","Navy"],sizes:["S","M","L","XL","XXL"],features:["Sinker Cotton","Round Neck","Regular Fit","Breathable"],images:[]},
+  {name:"Textured Polo T-Shirt",tag:"Premium",category:"Polo",icon:"👔",gender:"men",desc:"220 GSM textured pique cotton. Structured collar that holds its shape.",price:599,mrp:999,colors:["#0F0D0A","#FFFFFF","#1A3A5C","#2D5A27"],colorNames:["Black","White","Navy","Olive"],sizes:["S","M","L","XL","XXL"],features:["220 GSM Pique","Structured Collar","2-Button Placket","Side Vents"],images:[]},
+  {name:"French Terry Polo",tag:"Premium",category:"Polo",icon:"👔",gender:"men",desc:"330 GSM French terry fabric. Luxuriously soft with premium weight.",price:699,mrp:1199,colors:["#0F0D0A","#FFFFFF","#4A3728"],colorNames:["Black","White","Mocha"],sizes:["S","M","L","XL","XXL"],features:["330 GSM French Terry","Ribbed Collar","Premium Weight","Soft Handfeel"],images:[]},
+  {name:"Men's French Terry Joggers",tag:"Comfort",category:"Bottoms",icon:"👖",gender:"men",desc:"240 GSM French terry. Elasticated waist, deep pockets, ribbed cuffs.",price:649,mrp:1099,colors:["#0F0D0A","#5A5A5A","#4A3728"],colorNames:["Black","Charcoal","Mocha"],sizes:["S","M","L","XL","XXL"],features:["240 GSM French Terry","Elasticated Waist","Deep Pockets","Ribbed Cuffs"],images:[]},
+  {name:"Men's Premium Hoodie",tag:"Coming Soon",category:"Hoodies",icon:"🧥",gender:"men",desc:"300 GSM fleece hoodie. Kangaroo pocket, adjustable drawstring hood.",price:899,mrp:1499,colors:["#0F0D0A","#5A5A5A","#F0EBE0"],colorNames:["Black","Charcoal","Off White"],sizes:["S","M","L","XL","XXL"],features:["300 GSM Fleece","Kangaroo Pocket","Drawstring Hood","Ribbed Cuffs"],images:[]},
+  {name:"Women's Flowy Crop Tee",tag:"New",category:"Women's",icon:"👚",gender:"women",desc:"Lightweight breezy crop tee with relaxed drape. Perfect for any occasion.",price:399,mrp:699,colors:["#F5C6D0","#FFFFFF","#E8D5B7","#0F0D0A"],colorNames:["Blush Pink","White","Cream","Black"],sizes:["XS","S","M","L","XL"],features:["Soft Cotton","Crop Length","Relaxed Fit","Breathable"],images:[]},
+  {name:"Women's Oversized Tee",tag:"Best Seller",category:"Women's",icon:"👕",gender:"women",desc:"The iconic oversized silhouette crafted for women. Effortlessly cool.",price:449,mrp:799,colors:["#0F0D0A","#FFFFFF","#D4A0B0"],colorNames:["Black","White","Dusty Rose"],sizes:["XS","S","M","L","XL"],features:["180 GSM Cotton","Oversized Fit","Drop Shoulder","Pre-shrunk"],images:[]},
+  {name:"Women's Round Neck Tee",tag:"New",category:"Women's",icon:"👕",gender:"women",desc:"Soft sinker cotton in feminine cuts. Lightweight and breathable.",price:399,mrp:699,colors:["#F5C6D0","#FFFFFF","#D4A0B0"],colorNames:["Blush Pink","White","Dusty Rose"],sizes:["XS","S","M","L","XL"],features:["Sinker Cotton","Round Neck","Feminine Fit","Breathable"],images:[]},
+  {name:"Women's French Terry Joggers",tag:"Comfort",category:"Women's",icon:"👖",gender:"women",desc:"High-rise waist, tapered fit, deep pockets — crafted for women.",price:599,mrp:999,colors:["#0F0D0A","#5A5A5A","#D4A0B0"],colorNames:["Black","Charcoal","Dusty Rose"],sizes:["XS","S","M","L","XL"],features:["240 GSM French Terry","High-Rise Waist","Tapered Fit","Deep Pockets"],images:[]},
+  {name:"Women's Premium Hoodie",tag:"Coming Soon",category:"Hoodies",icon:"🧥",gender:"women",desc:"300 GSM fleece in relaxed feminine cut. Cosy and endlessly wearable.",price:849,mrp:1399,colors:["#F5C6D0","#0F0D0A","#F0EBE0"],colorNames:["Blush Pink","Black","Off White"],sizes:["XS","S","M","L","XL"],features:["300 GSM Fleece","Feminine Cut","Kangaroo Pocket","Ribbed Hem"],images:[]}
+];
+
+// ─────────────────────────────────────
+// LOAD PRODUCTS FROM FIREBASE
+// ─────────────────────────────────────
+async function loadProducts() {
+  try {
+    if (!db) throw new Error('db not ready');
+    const snap = await db.collection('products').get();
+    if (snap.empty) {
+      await seedProducts();
+      return loadProducts();
+    }
+    allProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    renderStore();
+    if (document.getElementById('adminPanel').style.display === 'block') {
+      renderAdminProducts();
+      renderStats();
+    }
+  } catch(e) {
+    console.error('Firebase load failed, using defaults:', e);
+    // ✅ FALLBACK — show default products even without Firebase
+    allProducts = DEFAULT_PRODUCTS.map((p, i) => ({...p, id: 'default_' + i}));
+    renderStore();
+    toast('Showing offline products. Connect internet for live data.');
+  }
+}
+
+async function seedProducts() {
+  const batch = db.batch();
+  DEFAULT_PRODUCTS.forEach(p => {
+    p.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    batch.set(db.collection('products').doc(), p);
+  });
+  await batch.commit();
+}
+
+// ─────────────────────────────────────
+// STORE RENDERING
+// ─────────────────────────────────────
+function filterGender(g) {
+  curGender = g;
+  ['btnAll','btnMen','btnWomen'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById(g === 'all' ? 'btnAll' : g === 'men' ? 'btnMen' : 'btnWomen').classList.add('active');
+  renderStore();
+}
+
+function renderStore() {
+  const offers = getOffers();
+  const list = curGender === 'all' ? allProducts : allProducts.filter(p => p.gender === curGender);
+  const grid = document.getElementById('productsGrid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="loading-wrap" style="color:rgba(255,255,255,0.3);font-family:Cormorant Garamond,serif;font-size:18px;font-style:italic;grid-column:1/-1;">No products in this category yet.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    const disc = Math.round((1 - p.price / p.mrp) * 100);
+    const imgs = Array.isArray(p.images) ? p.images : [];
+    const firstImg = imgs[0] || '';
+    const offer = offers.find(o => o.apply === 'all' || o.apply === p.gender);
+    return `<div class="product-card" onclick="openModal('${p.id}')">
+      ${p.tag ? `<div class="product-badge">${p.tag}</div>` : ''}
+      ${offer ? `<div class="offer-badge">${offer.badge}</div>` : ''}
+      <div class="product-img-wrap">
+        <div class="img-overlay"><span>View Details</span></div>
+        ${firstImg ? `<img src="${firstImg}" alt="${p.name}" onerror="this.style.display='none'">` : `<div class="p-placeholder"><span class="p-icon">${p.icon}</span><span class="p-cat">${p.category}</span></div>`}
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${(p.desc||'').slice(0,82)}...</div>
+        <div class="product-colors">${(p.colors||[]).map((c,i) => `<div class="color-dot${i===0?' active':''}" style="background:${c};${c==='#FFFFFF'||c==='#F0EBE0'?'border-color:#ccc;':''}"></div>`).join('')}</div>
+        <div class="product-bottom">
+          <div class="price-wrap">
+            <span class="product-price">₹${p.price}</span>
+            <span class="product-mrp">₹${p.mrp}</span>
+            <span class="product-disc">${disc}% off</span>
+          </div>
+          <button class="add-cart-btn" onclick="event.stopPropagation();quickAdd('${p.id}')">Add +</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────
+// CART
+// ─────────────────────────────────────
+function quickAdd(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  addToCart(p, p.sizes?.[0] || 'M', p.colorNames?.[0] || 'Black');
+}
+
+function addToCart(p, size, color) {
+  const key = `${p.id}-${size}-${color}`;
+  const ex = cart.find(i => i.key === key);
+  if (ex) ex.qty++;
+  else cart.push({key, id:p.id, name:p.name, icon:p.icon, price:p.price, size, color, qty:1, images:p.images||[]});
+  updateCart();
+  toast(`${p.name} added to cart 🖤`);
+  closeModalDirect();
+}
+
+function updateCart() {
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s,i) => s + i.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  const itemsEl = document.getElementById('cartItems');
+  const footerEl = document.getElementById('cartFooter');
+  if (!cart.length) {
+    itemsEl.innerHTML = '<div class="cart-empty"><p>Your cart is empty.<br>Start shopping 🖤</p></div>';
+    footerEl.style.display = 'none'; return;
+  }
+  footerEl.style.display = 'block';
+  document.getElementById('cartTotal').textContent = `₹${total.toLocaleString('en-IN')}`;
+  itemsEl.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-img">${item.images?.[0] ? `<img src="${item.images[0]}" onerror="this.style.display='none'">` : item.icon}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-meta">${item.color} · Size ${item.size}</div>
+        <div class="cart-item-row">
+          <div class="cart-item-qty">
+            <button class="qty-btn" onclick="chgQty('${item.key}',-1)">−</button>
+            <span class="qty-num">${item.qty}</span>
+            <button class="qty-btn" onclick="chgQty('${item.key}',1)">+</button>
+          </div>
+          <span class="cart-item-price">₹${(item.price*item.qty).toLocaleString('en-IN')}</span>
+        </div>
+        <button class="cart-remove" onclick="rmCart('${item.key}')">Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+function chgQty(key,d){const i=cart.find(x=>x.key===key);if(!i)return;i.qty+=d;if(i.qty<=0)cart=cart.filter(x=>x.key!==key);updateCart();}
+function rmCart(key){cart=cart.filter(x=>x.key!==key);updateCart();}
+function toggleCart(){document.getElementById('cartSidebar').classList.toggle('open');document.getElementById('cartOverlay').classList.toggle('open');}
+
+// ─────────────────────────────────────
+// CHECKOUT
+// ─────────────────────────────────────
+function openCheckout() {
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  let html = cart.map(i => `<div class="order-summary-item"><span>${i.name} (${i.color}, ${i.size}) ×${i.qty}</span><span>₹${(i.price*i.qty).toLocaleString('en-IN')}</span></div>`).join('');
+  html += `<div class="order-summary-total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>`;
+  document.getElementById('checkoutSummary').innerHTML = html;
+  document.getElementById('checkoutOverlay').classList.add('open');
+  document.getElementById('cartSidebar').classList.remove('open');
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckout(){document.getElementById('checkoutOverlay').classList.remove('open');document.body.style.overflow='';}
+
+function processPayment() {
+  const name = document.getElementById('cf-name').value.trim();
+  const phone = document.getElementById('cf-phone').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const address = document.getElementById('cf-address').value.trim();
+  const city = document.getElementById('cf-city').value.trim();
+  const state = document.getElementById('cf-state').value.trim();
+  const pin = document.getElementById('cf-pin').value.trim();
+  const landmark = document.getElementById('cf-landmark').value.trim();
+  if (!name||!phone||!email||!address||!city||!state||!pin) {toast('Please fill all required fields!');return;}
+  if (phone.length < 10) {toast('Please enter a valid phone number!');return;}
+  if (pin.length < 6) {toast('Please enter a valid pincode!');return;}
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const customer = {name, phone, email, address:`${address}, ${city}, ${state} - ${pin}${landmark?', Near '+landmark:''}`, city, state, pin};
+  const orderId = 'ORD-' + Date.now();
+
+  // Save order as PENDING before payment opens
+  // This captures ALL payment methods including QR
+  async function preSaveOrder() {
+    try {
+      await db.collection('orders').doc(orderId).set({
+        orderId, customer,
+        items: cart.map(i => ({name:i.name, color:i.color, size:i.size, qty:i.qty, price:i.price})),
+        total,
+        paymentId: 'PENDING',
+        paymentMethod: 'razorpay',
+        status: 'Pending Payment',
+        date: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      return true;
+    } catch(e) {
+      console.error('Pre-save failed:', e);
+      return false;
+    }
+  }
+
+  // Called when payment confirmed on frontend (card, UPI app)
+  async function onPaymentSuccess(paymentId, method) {
+    try {
+      await db.collection('orders').doc(orderId).update({
+        paymentId,
+        paymentMethod: method || 'razorpay',
+        status: 'New',
+        paidAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      cart = [];
+      updateCart();
+      closeCheckout();
+      document.getElementById('successMsg').innerHTML = `Thank you <strong>${name}</strong>!<br>Your order <strong>#${orderId}</strong> has been placed.<br>We will contact you on <strong>${phone}</strong>.`;
+      document.getElementById('successOverlay').classList.add('open');
+      ['cf-name','cf-phone','cf-email','cf-address','cf-city','cf-state','cf-pin','cf-landmark'].forEach(id => document.getElementById(id).value = '');
+    } catch(e) {
+      // Order already pre-saved, just clear cart
+      cart = [];
+      updateCart();
+      closeCheckout();
+      document.getElementById('successOverlay').classList.add('open');
+    }
+  }
+
+  function openRazorpay() {
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: total * 100,
+      currency: 'INR',
+      name: 'VÉLUNO',
+      description: "L'Art Du Style — Premium Casual Wear",
+      prefill: {name, email, contact: phone},
+      notes: {
+        orderId: orderId,  // sent to webhook so it can update Firebase
+        customerName: name,
+        customerPhone: phone
+      },
+      theme: {color: '#C9A84C'},
+      handler: function(response) {
+        // Triggered for card, UPI app, net banking
+        onPaymentSuccess(response.razorpay_payment_id, 'razorpay');
+      },
+      modal: {
+        ondismiss: function() {
+          // Payment cancelled — delete pending order
+          db.collection('orders').doc(orderId).delete().catch(()=>{});
+          toast('Payment cancelled.');
+        }
+      }
+    };
+    new Razorpay(options).open();
+  }
+
+  // Pre-save order first, then open payment
+  toast('Preparing payment...');
+  preSaveOrder().then(() => {
+    if (typeof Razorpay !== 'undefined') {
+      openRazorpay();
+    } else {
+      const s = document.createElement('script');
+      s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      s.onload = openRazorpay;
+      s.onerror = () => {
+        // Delete pending order if payment fails to load
+        db.collection('orders').doc(orderId).delete().catch(()=>{});
+        toast('Payment failed to load. Check internet.');
+      };
+      document.head.appendChild(s);
+    }
+  });
+}
+
+// ─────────────────────────────────────
+// PRODUCT MODAL
+// ─────────────────────────────────────
+function openModal(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  const disc = Math.round((1 - p.price / p.mrp) * 100);
+  selSizes[id] = (p.sizes||[]).includes('M') ? 'M' : (p.sizes||[])[0] || 'M';
+  selColors[id] = (p.colorNames||[])[0] || 'Black';
+  gIdx = 0;
+  const imgs = Array.isArray(p.images) && p.images.length ? p.images : [];
+  const imgEl = document.getElementById('modalImg');
+  imgEl.style.padding = '0';
+  if (imgs.length) {
+    const slides = imgs.map(img => `<div class="gallery-slide"><img src="${img}" alt="${p.name}" onerror="this.style.display='none'"></div>`).join('');
+    const arrows = imgs.length > 1 ? `<button class="g-prev" onclick="goPrev()">&#8249;</button><button class="g-next" onclick="goNext()">&#8250;</button>` : '';
+    const dots = imgs.length > 1 ? `<div class="g-dots">${imgs.map((_,i) => `<div class="g-dot${i===0?' active':''}" onclick="goSlide(${i})"></div>`).join('')}</div>` : '';
+    imgEl.innerHTML = `<div class="gallery-wrap">${arrows}<div class="gallery-slides" id="gSlides">${slides}</div>${dots}</div>`;
+  } else {
+    imgEl.innerHTML = `<span style="font-size:80px;">${p.icon}</span>`;
+    imgEl.style.padding = '';
+  }
+  document.getElementById('modalInfo').innerHTML = `
+    <div><span class="modal-badge">${p.tag||p.category}</span><h2 class="modal-name">${p.name}</h2></div>
+    <div class="modal-price-row"><span class="modal-price">₹${p.price}</span><span class="modal-mrp">₹${p.mrp}</span><span class="modal-off">${disc}% off</span></div>
+    <p class="modal-desc">${p.desc}</p>
+    <div class="modal-divider"></div>
+    <div class="feat-grid">${(p.features||[]).map(f => `<div class="feat">${f}</div>`).join('')}</div>
+    <div><p class="size-label">Select Size</p><div class="sizes">${(p.sizes||[]).map(s => `<button class="size-opt${s===selSizes[id]?' active':''}" onclick="selSize('${id}','${s}',this)">${s}</button>`).join('')}</div></div>
+    <div><p class="size-label">Select Color</p><div class="modal-colors-row">${(p.colors||[]).map((c,i) => `<div class="color-dot${i===0?' active':''}" style="background:${c};${c==='#FFFFFF'||c==='#F0EBE0'?'border-color:#ccc;':''};width:22px;height:22px;" title="${(p.colorNames||[])[i]||''}" onclick="selColor('${id}','${(p.colorNames||[])[i]||''}',this)"></div>`).join('')}</div></div>
+    <button class="modal-add-btn" onclick="modalAddCart('${id}')">Add to Cart — ₹${p.price} 🖤</button>`;
+  document.getElementById('modalOverlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function modalAddCart(id){const p=allProducts.find(x=>x.id===id);if(p)addToCart(p,selSizes[id]||p.sizes?.[0],selColors[id]||p.colorNames?.[0]);}
+function selSize(id,s,el){selSizes[id]=s;el.closest('.sizes').querySelectorAll('.size-opt').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function selColor(id,c,el){selColors[id]=c;el.closest('.modal-colors-row').querySelectorAll('.color-dot').forEach(d=>d.classList.remove('active'));el.classList.add('active');}
+function goSlide(i){gIdx=i;const s=document.getElementById('gSlides');if(s)s.style.transform=`translateX(-${i*100}%)`;document.querySelectorAll('.g-dot').forEach((d,j)=>d.classList.toggle('active',j===i));}
+function goNext(){const t=document.querySelectorAll('.gallery-slide').length;goSlide((gIdx+1)%t);}
+function goPrev(){const t=document.querySelectorAll('.gallery-slide').length;goSlide((gIdx-1+t)%t);}
+function closeModal(e){if(e.target===document.getElementById('modalOverlay'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('modalOverlay').style.display='none';document.body.style.overflow='';}
+
+// ─────────────────────────────────────
+// ADMIN
+// ─────────────────────────────────────
+let kBuf = '';
+document.addEventListener('keydown', e => {
+  kBuf += e.key; if (kBuf.length > 5) kBuf = kBuf.slice(-5);
+  if (kBuf === 'admin') {document.getElementById('adminLogin').classList.add('open'); kBuf = '';}
+});
+
+function doLogin() {
+  if (document.getElementById('adminPwd').value === ADMIN_PASS) {
+    document.getElementById('adminLogin').classList.remove('open');
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('store').style.display = 'none';
+    document.getElementById('adminPwd').value = '';
+    document.getElementById('loginErr').style.display = 'none';
+    renderAdminProducts();
+    renderOrders();
+    renderOffers();
+    renderStats();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('adminPwd').value = '';
+  }
+}
+
+function exitAdmin() {
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('store').style.display = 'block';
+  if (ordersListener) {ordersListener(); ordersListener = null;}
+  loadProducts();
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.a-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.a-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+async function renderStats() {
+  try {
+    const [pSnap, oSnap] = await Promise.all([db.collection('products').get(), db.collection('orders').get()]);
+    const prods = pSnap.docs.map(d => d.data());
+    const orders = oSnap.docs.map(d => d.data());
+    const rev = orders.reduce((s,o) => s + (o.total||0), 0);
+    document.getElementById('adminStats').innerHTML = `
+      <div class="stat-card"><div class="stat-num">${prods.length}</div><div class="stat-label">Products</div></div>
+      <div class="stat-card"><div class="stat-num">${prods.filter(p=>p.gender==='men').length}</div><div class="stat-label">Men's</div></div>
+      <div class="stat-card"><div class="stat-num">${prods.filter(p=>p.gender==='women').length}</div><div class="stat-label">Women's</div></div>
+      <div class="stat-card"><div class="stat-num">${orders.length}</div><div class="stat-label">Orders</div></div>
+      <div class="stat-card"><div class="stat-num">₹${rev.toLocaleString('en-IN')}</div><div class="stat-label">Revenue</div></div>`;
+  } catch(e) {console.error(e);}
+}
+
+async function renderAdminProducts() {
+  try {
+    const snap = await db.collection('products').get();
+    const prods = snap.docs.map(d => ({id:d.id,...d.data()}));
+    const grid = document.getElementById('adminProductGrid');
+    if (!prods.length) {grid.innerHTML = '<div class="no-data">No products yet.</div>'; return;}
+    grid.innerHTML = prods.map(p => `
+      <div class="a-product-card">
+        <div class="apc-top"><span class="apc-icon">${p.icon}</span><div><div class="apc-name">${p.name}</div><div class="apc-gender">${p.gender} · ${p.category}</div></div></div>
+        <div class="apc-price">₹${p.price} <span style="font-size:12px;color:rgba(255,255,255,0.3);text-decoration:line-through;">₹${p.mrp}</span></div>
+        <div class="apc-actions">
+          <button class="apc-btn edit" onclick="editProduct('${p.id}')">Edit</button>
+          <button class="apc-btn del" onclick="deleteProduct('${p.id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  } catch(e) {toast('Error loading products.');}
+}
+
+function showForm() {
+  document.getElementById('formTitle').textContent = 'Add New Product';
+  document.getElementById('editId').value = '';
+  ['fp-name','fp-cat','fp-price','fp-mrp','fp-tag','fp-icon','fp-desc','fp-colors','fp-cnames','fp-sizes','fp-features','fp-url'].forEach(id => {const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('fp-icon').value = '👕';
+  document.getElementById('fp-gender').value = 'men';
+  curPhotos = []; renderPhotoSlots();
+  document.getElementById('productForm').style.display = 'block';
+  document.getElementById('productForm').scrollIntoView({behavior:'smooth'});
+}
+
+function hideForm() {document.getElementById('productForm').style.display = 'none';}
+
+async function editProduct(id) {
+  try {
+    const doc = await db.collection('products').doc(id).get();
+    if (!doc.exists) return;
+    const p = doc.data();
+    document.getElementById('formTitle').textContent = 'Edit Product';
+    document.getElementById('editId').value = id;
+    document.getElementById('fp-name').value = p.name||'';
+    document.getElementById('fp-cat').value = p.category||'';
+    document.getElementById('fp-price').value = p.price||'';
+    document.getElementById('fp-mrp').value = p.mrp||'';
+    document.getElementById('fp-gender').value = p.gender||'men';
+    document.getElementById('fp-tag').value = p.tag||'';
+    document.getElementById('fp-icon').value = p.icon||'👕';
+    document.getElementById('fp-desc').value = p.desc||'';
+    document.getElementById('fp-colors').value = (p.colors||[]).join(',');
+    document.getElementById('fp-cnames').value = (p.colorNames||[]).join(',');
+    document.getElementById('fp-sizes').value = (p.sizes||[]).join(',');
+    document.getElementById('fp-features').value = (p.features||[]).join(',');
+    curPhotos = Array.isArray(p.images) ? [...p.images] : [];
+    renderPhotoSlots();
+    document.getElementById('productForm').style.display = 'block';
+    document.getElementById('productForm').scrollIntoView({behavior:'smooth'});
+  } catch(e) {toast('Error loading product.');}
+}
+
+async function saveProduct() {
+  const name = document.getElementById('fp-name').value.trim();
+  const price = parseFloat(document.getElementById('fp-price').value);
+  const mrp = parseFloat(document.getElementById('fp-mrp').value);
+  if (!name||!price||!mrp) {toast('Please fill Name, Price and MRP!'); return;}
+  const editId = document.getElementById('editId').value;
+  const data = {
+    name, price, mrp,
+    category: document.getElementById('fp-cat').value.trim()||'General',
+    gender: document.getElementById('fp-gender').value,
+    tag: document.getElementById('fp-tag').value.trim(),
+    icon: document.getElementById('fp-icon').value.trim()||'👕',
+    desc: document.getElementById('fp-desc').value.trim()||'Premium quality by Véluno.',
+    images: curPhotos,
+    colors: document.getElementById('fp-colors').value.split(',').map(s=>s.trim()).filter(Boolean),
+    colorNames: document.getElementById('fp-cnames').value.split(',').map(s=>s.trim()).filter(Boolean),
+    sizes: document.getElementById('fp-sizes').value.split(',').map(s=>s.trim()).filter(Boolean),
+    features: document.getElementById('fp-features').value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,4),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try {
+    if (editId) {
+      await db.collection('products').doc(editId).update(data);
+      toast('Product updated! 🖤');
+    } else {
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('products').add(data);
+      toast('Product added! 🖤');
+    }
+    hideForm();
+    await loadProducts();
+    renderAdminProducts();
+    renderStats();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } catch(e) {toast('Error saving: ' + e.message);}
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  try {
+    await db.collection('products').doc(id).delete();
+    toast('Product deleted.');
+    await loadProducts();
+    renderAdminProducts();
+    renderStats();
+  } catch(e) {toast('Error deleting.');}
+}
+
+// ─────────────────────────────────────
+// PHOTO UPLOAD
+// ─────────────────────────────────────
+function renderPhotoSlots() {
+  const c = document.getElementById('photoSlots');
+  if (!c) return;
+  c.innerHTML = curPhotos.map((img,i) => `<div class="photo-slot"><img src="${img}" onerror="this.style.display='none'"><button class="photo-slot-x" onclick="rmPhoto(${i})">✕</button></div>`).join('');
+}
+
+function compressImg(file, cb) {
+  const r = new FileReader();
+  r.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const max = 800, ratio = Math.min(max/img.width, max/img.height, 1);
+      canvas.width = Math.round(img.width*ratio);
+      canvas.height = Math.round(img.height*ratio);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      cb(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.src = e.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+function handlePhotos(input) {
+  const files = Array.from(input.files).slice(0, 5 - curPhotos.length);
+  if (!files.length) return;
+  if (curPhotos.length >= 5) {toast('Max 5 photos!'); return;}
+  let done = 0;
+  files.forEach(f => {
+    compressImg(f, compressed => {
+      curPhotos.push(compressed);
+      done++;
+      if (done === files.length) {renderPhotoSlots(); toast(`${done} photo(s) added! 🖤`);}
+    });
+  });
+  input.value = '';
+}
+
+function addUrl() {
+  const url = document.getElementById('fp-url').value.trim();
+  if (!url) {toast('Please paste a URL!'); return;}
+  if (!url.startsWith('http')) {toast('URL must start with http'); return;}
+  if (curPhotos.length >= 5) {toast('Max 5 photos!'); return;}
+  curPhotos.push(url);
+  renderPhotoSlots();
+  document.getElementById('fp-url').value = '';
+  toast('Photo URL added! 🖤');
+}
+
+function rmPhoto(idx) {curPhotos.splice(idx, 1); renderPhotoSlots();}
+
+// ─────────────────────────────────────
+// ORDERS — REAL TIME
+// ─────────────────────────────────────
+function renderOrders() {
+  if (ordersListener) ordersListener();
+  ordersListener = db.collection('orders').orderBy('date','desc').onSnapshot(snap => {
+    const orders = snap.docs.map(d => ({id:d.id,...d.data()}));
+    document.getElementById('orderCount').textContent = `(${orders.length})`;
+    const c = document.getElementById('ordersContainer');
+    if (!orders.length) {c.innerHTML = '<div class="no-data">No orders yet. They appear here instantly after payment!</div>'; return;}
+    c.innerHTML = `<table class="orders-table">
+      <thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Contact</th><th>Address</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+      <tbody>${orders.map(o => `<tr>
+        <td style="color:var(--gold);">${o.orderId||o.id}</td>
+        <td style="font-size:10px;">${o.date?.toDate?o.date.toDate().toLocaleString('en-IN'):'—'}</td>
+        <td>${o.customer?.name||'—'}</td>
+        <td style="font-size:10px;">${o.customer?.phone||'—'}<br><span style="color:rgba(255,255,255,0.4)">${o.customer?.email||''}</span></td>
+        <td style="font-size:10px;max-width:140px;">${o.customer?.address||'—'}</td>
+        <td style="font-size:10px;">${(o.items||[]).map(i=>`${i.name}(${i.color},${i.size})×${i.qty}`).join('<br>')}</td>
+        <td style="font-family:Cormorant Garamond,serif;font-size:18px;color:var(--gold);">₹${(o.total||0).toLocaleString('en-IN')}</td>
+        <td style="font-size:9px;color:rgba(255,255,255,0.4);">${o.paymentId||'—'}</td>
+        <td><select class="status-select" onchange="updStatus('${o.id}',this.value)">
+          <option value="New" ${o.status==='New'?'selected':''}>New</option>
+          <option value="Processing" ${o.status==='Processing'?'selected':''}>Processing</option>
+          <option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option>
+          <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+        </select></td>
+      </tr>`).join('')}</tbody></table>`;
+  }, e => {console.error(e); document.getElementById('ordersContainer').innerHTML = '<div class="no-data">Error loading orders.</div>';});
+}
+
+async function updStatus(id, status) {
+  try {await db.collection('orders').doc(id).update({status}); toast(`Order → ${status}`);}
+  catch(e) {toast('Error updating.');}
+}
+
+// ─────────────────────────────────────
+// OFFERS
+// ─────────────────────────────────────
+function getOffers(){return JSON.parse(localStorage.getItem('v_offers')||'[]');}
+function saveOffers(o){localStorage.setItem('v_offers',JSON.stringify(o));}
+
+function renderOffers() {
+  const offers = getOffers();
+  const c = document.getElementById('offersContainer');
+  if (!offers.length) {c.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-style:italic;font-family:Cormorant Garamond,serif;font-size:16px;">No active offers.</p>'; return;}
+  c.innerHTML = offers.map(o => `<div class="offer-card"><div><div class="offer-name">${o.title}</div><div class="offer-detail">${o.pct}% off · ${o.apply}</div></div><span class="offer-pill">${o.badge}</span><button class="offer-del-btn" onclick="delOffer(${o.id})">Remove</button></div>`).join('');
+}
+
+async function saveOffer() {
+  const title = document.getElementById('of-title').value.trim();
+  const pct = parseFloat(document.getElementById('of-pct').value);
+  const apply = document.getElementById('of-apply').value;
+  const badge = document.getElementById('of-badge').value.trim()||`${pct}% OFF`;
+  if (!title||!pct) {toast('Fill title and discount!'); return;}
+  const offers = getOffers();
+  offers.push({id:Date.now(), title, pct, apply, badge});
+  saveOffers(offers);
+  const snap = await db.collection('products').get();
+  const batch = db.batch();
+  snap.docs.forEach(doc => {
+    const p = doc.data();
+    if (apply === 'all' || apply === p.gender) {
+      const orig = p._orig || p.mrp;
+      batch.update(doc.ref, {price: Math.round(orig*(1-pct/100)), _orig: orig});
+    }
+  });
+  await batch.commit();
+  await loadProducts();
+  renderOffers();
+  toast(`Offer applied! 🖤`);
+  document.getElementById('of-title').value='';
+  document.getElementById('of-pct').value='';
+  document.getElementById('of-badge').value='';
+}
+
+async function delOffer(id) {
+  const offers = getOffers().filter(o => o.id !== id);
+  saveOffers(offers);
+  const snap = await db.collection('products').get();
+  const batch = db.batch();
+  snap.docs.forEach(doc => {
+    const p = doc.data();
+    if (p._orig) batch.update(doc.ref, {price: p._orig, _orig: firebase.firestore.FieldValue.delete()});
+  });
+  await batch.commit();
+  await loadProducts();
+  renderOffers();
+  toast('Offer removed. Prices restored.');
+}
+
+// ─────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ─────────────────────────────────────
+// INIT
+// ─────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  try {
+    if (typeof firebase === 'undefined') throw new Error('Firebase not loaded');
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.firestore();
+    loadProducts();
+  } catch(e) {
+    console.error('Firebase init failed:', e);
+    // Fallback — show default products
+    allProducts = DEFAULT_PRODUCTS.map((p, i) => ({...p, id: 'default_' + i}));
+    renderStore();
+  }
+});
+</script>
+</body>
+</html>
