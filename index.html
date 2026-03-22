@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{--gold:#C9A84C;--gold-d:#A07830;--gold-l:#E2C47A;--bg:#F7F3EC;--bg2:#EDE7D9;--white:#FFFFFF;--black:#0F0D0A;--text:#1C1710;--muted:#7A6B55;--border:rgba(201,168,76,0.2);--red:#C0392B;}
@@ -735,34 +736,17 @@ function processPayment() {
   const customer = {name, phone, email, address:`${address}, ${city}, ${state} - ${pin}${landmark?', Near '+landmark:''}`, city, state, pin};
   const orderId = 'ORD-' + Date.now();
 
-  // Save order as PENDING before payment opens
-  // This captures ALL payment methods including QR
-  async function preSaveOrder() {
+  // Save order ONLY after successful payment
+  async function onPaymentSuccess(paymentId, method) {
     try {
       await db.collection('orders').doc(orderId).set({
         orderId, customer,
         items: cart.map(i => ({name:i.name, color:i.color, size:i.size, qty:i.qty, price:i.price})),
         total,
-        paymentId: 'PENDING',
-        paymentMethod: 'razorpay',
-        status: 'Pending Payment',
-        date: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      return true;
-    } catch(e) {
-      console.error('Pre-save failed:', e);
-      return false;
-    }
-  }
-
-  // Called when payment confirmed on frontend (card, UPI app)
-  async function onPaymentSuccess(paymentId, method) {
-    try {
-      await db.collection('orders').doc(orderId).update({
         paymentId,
         paymentMethod: method || 'razorpay',
         status: 'New',
-        paidAt: firebase.firestore.FieldValue.serverTimestamp()
+        date: firebase.firestore.FieldValue.serverTimestamp()
       });
       cart = [];
       updateCart();
@@ -771,7 +755,7 @@ function processPayment() {
       document.getElementById('successOverlay').classList.add('open');
       ['cf-name','cf-phone','cf-email','cf-address','cf-city','cf-state','cf-pin','cf-landmark'].forEach(id => document.getElementById(id).value = '');
     } catch(e) {
-      // Order already pre-saved, just clear cart
+      console.error('Order save failed:', e);
       cart = [];
       updateCart();
       closeCheckout();
@@ -779,7 +763,7 @@ function processPayment() {
     }
   }
 
-  function openRazorpay(rzpOrderId) {
+  function openRazorpay() {
     const options = {
       key: RAZORPAY_KEY,
       amount: total * 100,
@@ -794,57 +778,24 @@ function processPayment() {
       },
       modal: {
         ondismiss: function() {
-          db.collection('orders').doc(orderId).delete().catch(()=>{});
           toast('Payment cancelled.');
         }
       }
     };
-    // Only add order_id if valid
-    if (rzpOrderId && rzpOrderId.startsWith('order_')) {
-      options.order_id = rzpOrderId;
-    }
     new Razorpay(options).open();
   }
 
-  function createAndPay() {
-    fetch('/api/createorder', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({amount: total * 100, currency: 'INR', receipt: orderId})
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.id && data.id.startsWith('order_')) {
-        openRazorpay(data.id);
-      } else {
-        // API returned bad data — open without order_id
-        console.warn('Order API issue, opening without order_id:', data);
-        openRazorpay(null);
-      }
-    })
-    .catch(err => {
-      // API not available — open Razorpay directly without order_id
-      console.warn('API unavailable, opening directly:', err);
-      openRazorpay(null);
-    });
+  // Open Razorpay directly — no pre-saving
+  if (typeof Razorpay !== 'undefined') {
+    openRazorpay();
+  } else {
+    toast('Loading payment...');
+    const s = document.createElement('script');
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    s.onload = openRazorpay;
+    s.onerror = () => toast('Payment gateway failed to load. Check internet.');
+    document.head.appendChild(s);
   }
-
-  // Pre-save order first, then open payment
-  toast('Preparing payment...');
-  preSaveOrder().then(() => {
-    if (typeof Razorpay !== 'undefined') {
-      createAndPay();
-    } else {
-      const s = document.createElement('script');
-      s.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      s.onload = createAndPay;
-      s.onerror = () => {
-        db.collection('orders').doc(orderId).delete().catch(()=>{});
-        toast('Payment failed to load. Check internet.');
-      };
-      document.head.appendChild(s);
-    }
-  });
 }
 
 // ─────────────────────────────────────
